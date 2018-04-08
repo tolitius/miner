@@ -24,8 +24,8 @@ A couple of omitted details from the above flow:
 
 ## "I Me Mine"
 
-> Coming on strong all the time
-All through' the day I me mine
+> Coming on strong all the time  
+All through' the day I me mine  
 _(the Beatles / "Let It Be" / 8 May 1970)_
 
 We'll work with a slightly different version of a block header that explicitly includes miner's addess and does _not_ include the difficulty, since we'll use it as a function argument to have a more dynamic feel to it:
@@ -47,7 +47,7 @@ We'll work with a slightly different version of a block header that explicitly i
 Let's mine a proper hash for this block with a difficulty of 9 leading zero bits:
 
 ```bash
-[miner]$ boot dev
+$ boot dev
 ```
 ```clojure
 => (mine {:block m/block-header :difficulty 9})
@@ -96,9 +96,9 @@ Now let's up our game by increasing the difficulty to 24 leading zero bits:
 
 ## Prove and verify
 
-to verify someone did the work: is constant time (i.e. inexpensive)
+to _prove_ you did the work:      is **exponentially hard** depending on the current algorithm's difficulty
 
-to _prove_ you did the work:    is exponentially hard depending on the current algorithm's difficulty
+to _verify_ someone did the work: is **constant time** (i.e. inexpensive)
 
 ## License
 
