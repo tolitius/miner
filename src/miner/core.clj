@@ -13,18 +13,18 @@
 (defn hexify [bs]
   (DatatypeConverter/printHexBinary bs))
 
-(defn found-match [block difficulty counter]
-  (let [bs (.getBytes (str block counter))]
+(defn found-match [block difficulty nonce]
+  (let [bs (.getBytes (str block nonce))]
     (when (found? difficulty bs)
       {:block-hash (hexify (sha-256 (sha-256 bs)))
-       :counter counter})))
+       :nonce nonce})))
 
 (defn mine [{:keys [block difficulty]}]
   (some (partial found-match block difficulty)
         (range)))
 
-(defn verify [{:keys [block counter]}]
-  (let [bhash (-> (.getBytes (str block counter))
+(defn verify [{:keys [block nonce]}]
+  (let [bhash (-> (.getBytes (str block nonce))
                   sha-256
                   sha-256)]
     {:block-hash (hexify bhash)
