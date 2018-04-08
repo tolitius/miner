@@ -11,22 +11,22 @@ Bitcoin relies on [Hashcash](https://en.wikipedia.org/wiki/Hashcash) to find (mi
   - difficulty (how many leading zero bits there should be in a new block hash)
   - nonce (starts with 0 and increments until the hash is found)
 
-* runs a `sha256( sha256( block_header ) )`
+* run a `sha256( sha256( block_header ) )`
 
-  - if the hash _does not_ have `difficulty` number of leading zero bits, increment `nonce` try again
-  - if the hash _does_ have `difficulty` number of leading zero bits, stop and celebrate
+  - if the hash _does not_ have a `difficulty` number of leading zero bits, increment `nonce` try again
+  - if the hash _does_ have a `difficulty` number of leading zero bits, stop and celebrate
 
 A couple of omitted details from the above flow:
 
 * the first transaction in the block has a miner's address which makes a unique seed for hashing
-* [difficulty](https://blockexplorer.com/api/status?q=getDifficulty) is not exactly an integer since bitcoin algorithm needs to adjust difficulty to still maintain 10 minute block interval. so it is usually represented as a 256-bit number and all the valid block hashes need to be lower than or equal to it.
+* [difficulty](https://blockexplorer.com/api/status?q=getDifficulty) is not exactly an integer since bitcoin algorithm needs to adjust difficulty to still maintain 10 minute block intervals. so it is usually represented as a 256-bit number and all the valid block hashes need to be lower than or equal to it.
 * whever `nonce` overflows, an `extraNonce` field of the very first transaction in the block is changed (which changes the merkle root hash), and the `nonce` is then reset back to `0`.
 
 ## "I Me Mine"
 
 > Coming on strong all the time
-> All through' the day I me mine
-> _(the Beatles. album: "Let It Be". released: "8 May 1970")_
+All through' the day I me mine
+_(the Beatles / "Let It Be" / 8 May 1970)_
 
 We'll work with a slightly different version of a block header that explicitly includes miner's addess and does _not_ include the difficulty, since we'll use it as a function argument to have a more dynamic feel to it:
 
@@ -35,20 +35,21 @@ We'll work with a slightly different version of a block header that explicitly i
 ;; hence the merkle root is unique
 ;; "mine address" here is for demo purposes to show presence of "x" in "H(s,x,c) < 2^(n-k)"
 
-(def block-header (str {:version 42
-                        :hash-prev-block "00000000000000001e8d6829a8a21adc5d38d0a473b144b6765798e61f98bd1d"
-                        :hash-merkle-root "51d37bdd871c9e1f4d5541be67a6ab625e32028744d7d4609d0c37747b40cd2"
-                        :time (/ (System/currentTimeMillis) 1000)
-                        :miner-adddress "1c1tAaz5x1HUXrCNLbtMDqc46o5GNn4xqX"}))
+{:version 42
+ :hash-prev-block "00000000000000001e8d6829a8a21adc5d38d0a473b144b6765798e61f98bd1d"
+ :hash-merkle-root "51d37bdd871c9e1f4d5541be67a6ab625e32028744d7d4609d0c37747b40cd2"
+ :time (/ (System/currentTimeMillis) 1000)
+ :miner-adddress "1c1tAaz5x1HUXrCNLbtMDqc46o5GNn4xqX"}
 ```
 
 `:time` will be different every time this header is created / compiled to have some lively mining properties.
 
 Let's mine a proper hash for this block with a difficulty of 9 leading zero bits:
 
+```bash
+[miner]$ boot dev
+```
 ```clojure
-$ boot dev
-
 => (mine {:block m/block-header :difficulty 9})
 
 {:block-hash "0000C4881FB571CB7FDEEC94FB07968B3822E28F48B86CF76B5D619F5C59741E", :counter 48833}
@@ -96,6 +97,7 @@ Now let's up our game by increasing the difficulty to 24 leading zero bits:
 ## Prove and verify
 
 to verify someone did the work: is constant time (i.e. inexpensive)
+
 to _prove_ you did the work:    is exponentially hard depending on the current algorithm's difficulty
 
 ## License
