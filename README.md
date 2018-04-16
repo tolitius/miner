@@ -13,19 +13,19 @@ Bitcoin relies on [Hashcash](https://en.wikipedia.org/wiki/Hashcash) to find (mi
 
 * run a `sha256( sha256( block_header ) )`
 
-  - if the hash _does not_ have a `difficulty` number of leading zero bits, increment `nonce` try again
-  - if the hash _does_ have a `difficulty` number of leading zero bits, stop and celebrate
+  - if the hash _does not_ have a "`difficulty`" number of leading zero bits, increment `nonce` try again
+  - if the hash _does_ have a "`difficulty`" number of leading zero bits, stop and celebrate
 
-A couple of omitted details from the above flow:
+A couple of omitted details / real world corrections from the above flow:
 
 * the first transaction in the block has a miner's address which makes a unique seed for hashing
-* [difficulty](https://blockexplorer.com/api/status?q=getDifficulty) is not exactly an integer since bitcoin algorithm needs to adjust difficulty to still maintain 10 minute block intervals. so it is usually represented as a 256-bit number and all the valid block hashes need to be lower than or equal to it.
+* [difficulty](https://blockexplorer.com/api/status?q=getDifficulty) is not exactly a "target" (which is a 256 bit number a valid block hash should be "less than", hence leading zero bits), but instead it shows how difficult the current target makes it to find a block, relative to how difficult it would be at the highest possible target (highest target = lowest difficulty). [Here](https://bitcoin.stackexchange.com/a/8811) is a good explanation of difficulty and target.
 * whever `nonce` overflows, an `extraNonce` field of the very first transaction in the block is changed (which changes the merkle root hash), and the `nonce` is then reset back to `0`.
 
 ## "I Me Mine"
 
-> Coming on strong all the time  
-All through' the day I me mine  
+> Coming on strong all the time
+All through' the day I me mine
 _(the Beatles / "Let It Be" / 8 May 1970)_
 
 We'll work with a slightly different version of a block header that explicitly includes miner's addess and does _not_ include the difficulty, since we'll use it as a function argument to have a more dynamic feel to it:
