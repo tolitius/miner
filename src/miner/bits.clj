@@ -21,7 +21,7 @@
     (fn [current b]
       (let [zbits (byte-leading-zero-bits b)]
         (if (< zbits 8)
-          (reduced current)
+          (reduced (+ current zbits))
           (+ current zbits))))
     0
     bhash))
