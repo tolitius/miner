@@ -26,7 +26,7 @@ A couple of omitted details / real world corrections from the above flow:
 
 * the first transaction in the block has a miner's address which makes a unique seed for hashing
 * in reality difficulty is a ratio of the highest target to the current target. "[Current Difficulty](#current-difficulty)" talks more about a "proper" difficulty. `miner` will use a number of leading zeros since it better illustrates the point plus bits are more fun to look at.
-* whever `nonce` overflows, an `extraNonce` field of the very first transaction in the block is changed (which changes the merkle root hash), and the `nonce` is then reset back to `0`.
+* whenever `nonce` overflows, an `extraNonce` field of the very first transaction in the block is changed (which changes the merkle root hash), and the `nonce` is then reset back to `0`.
 
 ## "I Me Mine"
 
