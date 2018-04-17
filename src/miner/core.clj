@@ -1,7 +1,15 @@
 (ns miner.core
-  (:require [miner.bits :as bits])
-  (:import [javax.xml.bind DatatypeConverter]
+  (:require [clojure.string :as s]
+            [miner.bits :as bits]
+            [org.httpkit.client :as http]
+            [cheshire.core :as json])
+
+  (:import [java.math RoundingMode]
+           [javax.xml.bind DatatypeConverter]
            [java.security MessageDigest]))
+
+(defonce difficulty-url "https://blockexplorer.com/api/status?q=getDifficulty")
+(defonce highest-target "00000000FFFF0000000000000000000000000000000000000000000000000000")
 
 (defn sha-256 [bs]
   (.digest (java.security.MessageDigest/getInstance "SHA-256") bs))
@@ -29,6 +37,25 @@
                   sha-256)]
     {:block-hash (hexify bhash)
      :bits (bits/bytes->bits bhash)}))
+
+(defn bigdec->hexstr [bd]
+  (let [hex (.toString (.toBigInteger bd) 16)]
+    (-> (format "%64s" hex)
+        (s/replace #" " "0"))))
+
+(defn show-current-difficulty []
+  (if-let [diff (-> @(http/get difficulty-url)
+                    :body
+                    (json/parse-string true)
+                    :difficulty)]
+    (let [bdiff (bigdec diff)
+          max-target (bigdec (BigInteger. highest-target 16))
+          target (-> (.divide max-target bdiff RoundingMode/HALF_EVEN)
+                   bigdec->hexstr)]
+      {:difficulty diff
+       :target target
+       :leading-zero-bits (bits/hexstr-leading-zero-bits target)})
+    {:error (str "could not fetch difficulty from " difficulty-url " try again")}))
 
 ;; playground
 

@@ -1,5 +1,11 @@
 # miner
 
+- ["I Me Mine"](#i-me-mine)
+- [Prove and verify](#prove-and-verify)
+- [Current Difficulty](#current-difficulty)
+- [License](#license)
+
+
 Bitcoin relies on [Hashcash](https://en.wikipedia.org/wiki/Hashcash) to find (mine) the next block in a chain. The overall flow is fairly simple:
 
 * create a `block header` that includes:
@@ -8,7 +14,7 @@ Bitcoin relies on [Hashcash](https://en.wikipedia.org/wiki/Hashcash) to find (mi
   - transaction merkle tree hash (i.e. a hash of all transactions in a block)
   - hash of the previous block (i.e. a potential parent)
   - current timestamp in seconds
-  - difficulty (how many leading zero bits there should be in a new block hash)
+  - difficulty (roughly how many leading zero bits there should be in a new block hash)
   - nonce (starts with 0 and increments until the hash is found)
 
 * run a `sha256( sha256( block_header ) )`
@@ -19,7 +25,7 @@ Bitcoin relies on [Hashcash](https://en.wikipedia.org/wiki/Hashcash) to find (mi
 A couple of omitted details / real world corrections from the above flow:
 
 * the first transaction in the block has a miner's address which makes a unique seed for hashing
-* [difficulty](https://blockexplorer.com/api/status?q=getDifficulty) is not exactly a "target" (which is a 256 bit number a valid block hash should be "less than", hence leading zero bits), but instead it shows how difficult the current target makes it to find a block, relative to how difficult it would be at the highest possible target (highest target = lowest difficulty). [Here](https://bitcoin.stackexchange.com/a/8811) is a good explanation of difficulty and target.
+* in reality difficulty is a ratio of the highest target to the current target. "[Current Difficulty](#current-difficulty)" talks more about a "proper" difficulty. `miner` will use a number of leading zeros since it better illustrates the point plus bits are more fun to look at.
 * whever `nonce` overflows, an `extraNonce` field of the very first transaction in the block is changed (which changes the merkle root hash), and the `nonce` is then reset back to `0`.
 
 ## "I Me Mine"
@@ -99,6 +105,22 @@ Now let's up our game by increasing the difficulty to 24 leading zero bits:
 to _prove_ you did the work:      is **exponentially hard** depending on the current algorithm's difficulty
 
 to _verify_ someone did the work: is **constant time** (i.e. inexpensive)
+
+## Current Difficulty
+
+Real difficulty shows the ratio between the highest target (the lowest difficulty) which is `0x00000000FFFF0000000000000000000000000000000000000000000000000000` and the current target. In other words: "how more difficult it became to find the correct hash/block".
+
+`miner` fetches the current difficulty from [blockexplorer](https://blockexplorer.com/api/status?q=getDifficulty) and calculates the current target and the number of leading zero bits the hash should have:
+
+```clojure
+=> (m/show-current-difficulty)
+
+{:difficulty 3.839316899029672E12,
+ :target "00000000000000000049500cffffffff27fa820ec18bb1999d9f4f0e1fd9e679",
+ :leading-zero-bits 72}
+```
+
+this really means that any hash **less than a `target`** is correct. So leading zero bits used by `miner` is a "ceiling approxomation".
 
 ## License
 

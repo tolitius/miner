@@ -3,6 +3,8 @@
 (set-env!
   :source-paths #{"src"}
   :dependencies '[[org.clojure/tools.logging   "0.4.0"]
+                  [http-kit                    "2.2.0"]
+                  [cheshire                    "5.8.0"]
 
                   ;; boot clj
                   [boot/core                   "2.7.2"           :scope "provided"]

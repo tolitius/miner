@@ -35,3 +35,12 @@
   (reduce (fn [bits b]
             (str bits (byte->sbits b)))
           "" barr))
+
+(defn hexstr-leading-zero-bits [hs]
+  (reduce (fn [zbits current]
+            (if (= \0 current)
+              (+ zbits 4)
+              (reduced zbits)))
+          0
+          hs))
+
