@@ -30,9 +30,9 @@ A couple of omitted details / real world corrections from the above flow:
 
 ## "I Me Mine"
 
-> Coming on strong all the time
-All through' the day I me mine
-_(the Beatles / "Let It Be" / 8 May 1970)_
+> _Coming on strong all the time<br/>
+All through' the day I me mine<br/>
+the Beatles / "Let It Be" / 8 May 1970_
 
 We'll work with a slightly different version of a block header that explicitly includes miner's addess and does _not_ include the difficulty, since we'll use it as a function argument to have a more dynamic feel to it:
 
